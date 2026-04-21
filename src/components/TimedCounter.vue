@@ -101,8 +101,8 @@ onUnmounted(() => clearInterval(timer))
     <div class="actions">
       <button v-if="!editing" @click="count = 0; velocity = 0">Reset</button>
       <button v-if="!editing" @click="openEdit"><Pencil :size="18" /></button>
-      <button v-if="editing" @click="applyEdit"><Check :size="18" /></button>
       <button v-if="editing" @click="cancelEdit"><X :size="18" /></button>
+      <button v-if="editing" @click="applyEdit"><Check :size="18" /></button>
     </div>
   </div>
 </template>
