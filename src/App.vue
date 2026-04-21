@@ -3,7 +3,9 @@ import TimedCounter from './components/TimedCounter.vue'
 </script>
 
 <template>
-  <TimedCounter />
+    <main>
+        <TimedCounter />
+    </main>
 </template>
 
 <style>
