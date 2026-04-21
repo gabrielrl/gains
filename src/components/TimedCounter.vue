@@ -1,4 +1,5 @@
 <script setup>
+import { Pencil, Check, X } from 'lucide-vue-next'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const unit = "$";
@@ -10,12 +11,32 @@ const SUFFIX_LIST = [
 
 const count = ref(0)
 const velocity = ref(0)
-const velocityInput = ref(velocity.value)
 const velocitySuffix = ref('')
 
-function applyVelocity() {
+const editing = ref(false)
+const draftInput = ref(0)
+const draftSuffix = ref('')
+
+function openEdit() {
+  draftInput.value = velocityInput()
+  draftSuffix.value = velocitySuffix.value
+  editing.value = true
+}
+
+function velocityInput() {
   const multiplier = SUFFIX_LIST.find(([s]) => s === velocitySuffix.value)?.[1] ?? 1
-  velocity.value = velocityInput.value * multiplier
+  return multiplier === 1 ? velocity.value : velocity.value / multiplier
+}
+
+function applyEdit() {
+  const multiplier = SUFFIX_LIST.find(([s]) => s === draftSuffix.value)?.[1] ?? 1
+  velocity.value = draftInput.value * multiplier
+  velocitySuffix.value = draftSuffix.value
+  editing.value = false
+}
+
+function cancelEdit() {
+  editing.value = false
 }
 
 const formattedCount = computed(() => {
@@ -38,21 +59,28 @@ onUnmounted(() => clearInterval(timer))
     <h1>Timed Counter</h1>
     <div class="count">{{ formattedCount }} {{ unit }}</div>
     <div>{{ count }} {{ unit }}</div>
-    <div class="velocity-input">
-      <label for="velocity-field">Taux</label>
+    <div class="velocity-display">
+      <span class="velocity-label">Taux&nbsp;:</span>
+      <span class="velocity-value">{{ velocityInput() }}{{ velocitySuffix }} {{ unit }}/s</span>
+      <button v-if="!editing" @click="openEdit"><Pencil :size="18" /></button>
+    </div>
+    <div v-if="editing" class="velocity-input">
+      <label for="velocity-field">Nouveau taux&nbsp;:</label>
       <input
         id="velocity-field"
-        v-model="velocityInput"
+        v-model="draftInput"
         type="number"
         min="0"
         step="1"
-        @change="applyVelocity"
+        autofocus
       />
-      <select v-model="velocitySuffix" @change="applyVelocity">
+      <select v-model="draftSuffix">
         <option value=""></option>
         <option v-for="[symbol] in SUFFIX_LIST" :key="symbol" :value="symbol">{{ symbol }}</option>
       </select>
-      <div>{{ unit }}/s</div>
+      <span>{{ unit }}/s</span>
+      <button @click="applyEdit"><Check :size="18" /></button>
+      <button @click="cancelEdit"><X :size="18" /></button>
     </div>
     <div class="actions">
       <button @click="count = 0; velocity = 0">Reset</button>
@@ -68,6 +96,23 @@ onUnmounted(() => clearInterval(timer))
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+}
+
+.velocity-display {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.velocity-label {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.velocity-value {
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .velocity-input {
