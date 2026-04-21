@@ -1,6 +1,9 @@
 <script setup>
-import { Pencil, Check, X } from 'lucide-vue-next'
+import { Pencil, Check, X, Trash2 } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
+
+const props = defineProps({ removable: { type: Boolean, default: false } })
+const emit = defineEmits(['remove'])
 
 const unit = "$";
 
@@ -18,6 +21,12 @@ const editing = ref(false)
 const draftName = ref(name.value)
 const draftInput = ref(0)
 const draftSuffix = ref('')
+
+function onRemove() {
+  if (confirm(`Êtes-vous sûr de vouloir supprimer le compteur "${name.value}"?`)) {
+    emit('remove')
+  }
+}
 
 function openEdit() {
   draftInput.value = velocityInput()
@@ -54,6 +63,7 @@ const formattedCount = computed(() => {
   }
   return String(n)
 })
+
 
 function tick() { count.value += velocity.value }
 
@@ -99,6 +109,7 @@ defineExpose({ tick })
       <span>{{ unit }}/s</span>
     </div>
     <div class="actions">
+      <button v-if="!editing && props.removable" class="remove-btn" @click="onRemove"><Trash2 :size="18" /></button>
       <button v-if="!editing" @click="count = 0; velocity = 0">Reset</button>
       <button v-if="!editing" @click="openEdit"><Pencil :size="18" /></button>
       <button v-if="editing" @click="cancelEdit"><X :size="18" /></button>
@@ -147,6 +158,16 @@ defineExpose({ tick })
 .velocity-input label {
   font-size: 0.875rem;
   color: #555;
+}
+
+.remove-btn {
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.remove-btn:hover {
+  background: #c0392b;
+  color: white;
 }
 
 .name-edit input {

@@ -5,6 +5,15 @@ import TimedCounter from './components/TimedCounter.vue'
 
 const counters = ref([0])
 const counterRefs = ref([])
+let nextId = 1
+
+function addCounter() {
+  counters.value.push(nextId++)
+}
+
+function removeCounter(id) {
+  counters.value = counters.value.filter(c => c !== id)
+}
 
 let timer
 onMounted(() => { timer = setInterval(() => { counterRefs.value.forEach(c => c.tick()) }, 1000) })
@@ -13,8 +22,14 @@ onUnmounted(() => clearInterval(timer))
 
 <template>
     <main>
-        <TimedCounter v-for="id in counters" :key="id" ref="counterRefs" />
-        <button class="add-counter" @click="counters.push(counters.length)">
+        <TimedCounter
+          v-for="id in counters"
+          :key="id"
+          ref="counterRefs"
+          :removable="counters.length > 1"
+          @remove="removeCounter(id)"
+        />
+        <button class="add-counter" @click="addCounter">
             <Plus :size="22" />
         </button>
     </main>
