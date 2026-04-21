@@ -115,6 +115,9 @@ onUnmounted(() => clearInterval(timer))
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  background-color: #0002;
+  padding: 1.5rem;
+  border-radius: 1rem;
 }
 
 .velocity-display {
