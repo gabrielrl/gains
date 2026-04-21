@@ -1,6 +1,6 @@
 <script setup>
 import { Pencil, Check, X } from 'lucide-vue-next'
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed } from 'vue'
 
 const unit = "$";
 
@@ -55,9 +55,9 @@ const formattedCount = computed(() => {
   return String(n)
 })
 
-let timer
-onMounted(() => { timer = setInterval(() => { count.value += velocity.value }, 1000) })
-onUnmounted(() => clearInterval(timer))
+function tick() { count.value += velocity.value }
+
+defineExpose({ tick })
 </script>
 
 <template>

@@ -1,14 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Plus } from 'lucide-vue-next'
 import TimedCounter from './components/TimedCounter.vue'
 
 const counters = ref([0])
+const counterRefs = ref([])
+
+let timer
+onMounted(() => { timer = setInterval(() => { counterRefs.value.forEach(c => c.tick()) }, 1000) })
+onUnmounted(() => clearInterval(timer))
 </script>
 
 <template>
     <main>
-        <TimedCounter v-for="id in counters" :key="id" />
+        <TimedCounter v-for="id in counters" :key="id" ref="counterRefs" />
         <button class="add-counter" @click="counters.push(counters.length)">
             <Plus :size="22" />
         </button>
