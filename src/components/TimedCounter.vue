@@ -74,7 +74,7 @@ onUnmounted(() => clearInterval(timer))
     
     <!-- Count -->
     <div class="count">{{ formattedCount }} {{ unit }}</div>
-    <div>{{ count }} {{ unit }}</div>
+    <!-- <div>{{ count }} {{ unit }}</div> -->
 
     <!-- Velocity -->
     <div v-if="!editing" class="velocity-display">

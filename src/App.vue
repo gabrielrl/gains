@@ -1,10 +1,17 @@
 <script setup>
+import { ref } from 'vue'
+import { Plus } from 'lucide-vue-next'
 import TimedCounter from './components/TimedCounter.vue'
+
+const counters = ref([0])
 </script>
 
 <template>
     <main>
-        <TimedCounter />
+        <TimedCounter v-for="id in counters" :key="id" />
+        <button class="add-counter" @click="counters.push(counters.length)">
+            <Plus :size="22" />
+        </button>
     </main>
 </template>
 
@@ -47,6 +54,24 @@ h1 {
 .actions {
   display: flex;
   gap: 0.75rem;
+}
+
+.add-counter {
+  margin-top: 1rem;
+  font-size: 1.25rem;
+  padding: 0.5rem 1.25rem;
+  border: 2px dashed #333;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.add-counter:hover {
+  background: #333;
+  color: white;
 }
 
 button {
