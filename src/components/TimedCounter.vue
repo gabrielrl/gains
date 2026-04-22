@@ -1,5 +1,5 @@
 <script setup>
-import { Pencil, Check, X, Trash2 } from 'lucide-vue-next'
+import { Pencil, Check, X, Trash2, Plus, TrendingUp } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 
 const props = defineProps({ removable: { type: Boolean, default: false } })
@@ -19,6 +19,8 @@ const velocitySuffix = ref('')
 
 const editing = ref(false)
 const draftName = ref(name.value)
+const draftAdditionNumber = ref(0)
+const draftAdditionSuffix = ref('')
 const draftInput = ref(0)
 const draftSuffix = ref('')
 
@@ -40,7 +42,12 @@ function velocityInput() {
 }
 
 function applyEdit() {
+
   name.value = draftName.value
+
+  const additionMultiplier = SUFFIX_LIST.find(([s]) => s === draftAdditionSuffix.value)?.[1] ?? 1
+  count.value += draftAdditionNumber.value * additionMultiplier
+
   const multiplier = SUFFIX_LIST.find(([s]) => s === draftSuffix.value)?.[1] ?? 1
   velocity.value = draftInput.value * multiplier
   velocitySuffix.value = draftSuffix.value
@@ -48,6 +55,8 @@ function applyEdit() {
 }
 
 function cancelEdit() {
+  draftAdditionNumber.value = 0
+  draftAdditionSuffix.value = ''
   draftName.value = name.value
   draftInput.value = count.value
   draftSuffix.value = velocitySuffix.value
@@ -86,14 +95,29 @@ defineExpose({ tick })
     <div class="count">{{ formattedCount }} {{ unit }}</div>
     <!-- <div>{{ count }} {{ unit }}</div> -->
 
+    <div v-if="editing" class="addition-edit">
+      <label for="addition-field"><Plus :size="18" /></label>
+      <input
+        id="addition-field"
+        v-model="draftAdditionNumber"
+        type="number"
+        step="1"
+      />
+      <select v-model="draftAdditionSuffix">
+        <option value=""></option>
+        <option v-for="[symbol] in SUFFIX_LIST" :key="symbol" :value="symbol">{{ symbol }}</option>
+      </select>
+      <span>{{ unit }}</span>
+    </div>
+
     <!-- Velocity -->
     <div v-if="!editing" class="velocity-display">
-      <span class="velocity-label">Taux&nbsp;:</span>
+      <span class="velocity-label"><TrendingUp :size="18" /></span>
       <span class="velocity-value">{{ velocityInput() }}{{ velocitySuffix }} {{ unit }}/s</span>
     </div>
     
     <div v-if="editing" class="velocity-input">
-      <label for="velocity-field">Taux&nbsp;:</label>
+      <label for="velocity-field"><TrendingUp :size="18" />&nbsp;:</label>
       <input
         id="velocity-field"
         v-model="draftInput"
@@ -148,6 +172,7 @@ defineExpose({ tick })
   font-weight: 600;
 }
 
+.addition-edit,
 .velocity-input {
   display: flex;
   flex-direction: row;
@@ -180,6 +205,7 @@ defineExpose({ tick })
   outline: none;
 }
 
+.addition-edit input,
 .velocity-input input {
   font-size: 1.1rem;
   padding: 0.4rem 0.75rem;
@@ -190,6 +216,7 @@ defineExpose({ tick })
   outline: none;
 }
 
+.addition-edit select,
 .velocity-input select {
   font-size: 1.1rem;
   padding: 0.4rem 0.75rem;
