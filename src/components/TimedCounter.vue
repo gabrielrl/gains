@@ -71,9 +71,9 @@ const formattedCount = computed(() => {
   const abs = Math.abs(n)
   const sign = n < 0 ? '-' : ''
   for (const [symbol, value] of [...SUFFIX_LIST].reverse()) {
-    if (abs >= value) return sign + parseFloat((abs / value).toFixed(3)) + symbol
+    if (abs >= value) return sign + parseFloat((abs / value).toPrecision(3)) + ' ' + symbol + unit
   }
-  return String(n)
+  return String(n) + ' ' + unit
 })
 
 
@@ -95,7 +95,7 @@ defineExpose({ tick })
     </div>
     
     <!-- Count -->
-    <div class="count">{{ formattedCount }} {{ unit }}</div>
+    <div class="count">{{ formattedCount }}</div>
     <!-- <div>{{ count }} {{ unit }}</div> -->
 
     <div v-if="editing" class="addition-edit">
@@ -116,7 +116,7 @@ defineExpose({ tick })
     <!-- Velocity -->
     <div v-if="!editing" class="velocity-display">
       <span class="velocity-label"><TrendingUp :size="18" /></span>
-      <span class="velocity-value">{{ velocityInput() }}{{ velocitySuffix }} {{ unit }}/s</span>
+      <span class="velocity-value">{{ velocityInput() }} {{ velocitySuffix }}{{ unit }}/s</span>
     </div>
     
     <div v-if="editing" class="velocity-input">
