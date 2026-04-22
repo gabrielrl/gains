@@ -64,18 +64,6 @@ h1 {
   color: #333;
 }
 
-.count {
-  font-size: 5rem;
-  font-weight: bold;
-  color: #111;
-  min-width: 4ch;
-}
-
-.actions {
-  display: flex;
-  gap: 0.75rem;
-}
-
 .add-counter {
   margin-top: 1rem;
   font-size: 1.25rem;
@@ -107,6 +95,20 @@ button {
 button:hover {
   background: #333;
   color: white;
+}
+
+/* Remove spinners from number inputs. */
+
+/* Chrome, Safari, Edge */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 </style>

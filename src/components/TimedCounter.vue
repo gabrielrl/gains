@@ -96,7 +96,7 @@ defineExpose({ tick })
     <!-- Name -->
     <div class="name">
       <div v-if="!editing" class="name-display">
-        <h1>{{ name }}</h1>
+        {{ name }}
       </div>
       <div v-if="editing" class="name-edit">
         <input v-model="draftName" type="text" />
@@ -166,10 +166,23 @@ defineExpose({ tick })
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: .666rem;
   background-color: #0002;
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 1rem;
+}
+
+.name-display {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #222;
+}
+
+.count {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #111;
+  min-width: 6ch;
 }
 
 .velocity-display {
@@ -228,7 +241,7 @@ defineExpose({ tick })
 .velocity-input input {
   font-size: 1.1rem;
   padding: 0.4rem 0.75rem;
-  width: 8ch;
+  width: 12ch;
   text-align: center;
   border: 2px solid #333;
   border-radius: 6px;
