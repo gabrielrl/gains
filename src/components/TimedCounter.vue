@@ -1,5 +1,5 @@
 <script setup>
-import { Pencil, Check, X, Trash2, Plus, TrendingUp } from 'lucide-vue-next'
+import { Pencil, Check, X, Trash2, Plus, TrendingUp, RotateCcw } from 'lucide-vue-next'
 import { ref, computed } from 'vue'
 
 const props = defineProps({ removable: { type: Boolean, default: false } })
@@ -134,7 +134,7 @@ defineExpose({ tick })
     </div>
     <div class="actions">
       <button v-if="!editing && props.removable" class="remove-btn" @click="onRemove"><Trash2 :size="18" /></button>
-      <button v-if="!editing" @click="count = 0; velocity = 0">Reset</button>
+      <button v-if="editing" @click="count = 0; velocity = 0"><RotateCcw :size="18" /></button>
       <button v-if="!editing" @click="openEdit"><Pencil :size="18" /></button>
       <button v-if="editing" @click="cancelEdit"><X :size="18" /></button>
       <button v-if="editing" @click="applyEdit"><Check :size="18" /></button>
