@@ -16,16 +16,18 @@ const SUFFIX_LIST = [
 ]
 
 const name = ref('Compteur')
+const multiplier = ref(1)
 const count = ref(0)
 const velocity = ref(0)
 const velocitySuffix = ref('')
 
 const editing = ref(false)
+const draftMultiplier = ref(multiplier.value)
 const draftName = ref(name.value)
 const draftAdditionNumber = ref(0)
 const draftAdditionSuffix = ref('')
-const draftInput = ref(0)
-const draftSuffix = ref('')
+const draftInput = ref(velocity.value)
+const draftSuffix = ref(velocitySuffix.value)
 
 function onRemove() {
   if (confirm(`Êtes-vous sûr de vouloir supprimer le compteur "${name.value}"?`)) {
@@ -35,6 +37,7 @@ function onRemove() {
 
 function onReset() {
   if (confirm(`Êtes-vous sûr de vouloir réinitialiser le compteur "${name.value}"?`)) {
+    multiplier.value = 1
     count.value = 0
     velocity.value = 0
     velocitySuffix.value = ''
@@ -43,6 +46,7 @@ function onReset() {
 }
 
 function openEdit() {
+  draftMultiplier.value = multiplier.value
   draftName.value = name.value
   draftAdditionNumber.value = 0
   draftAdditionSuffix.value = ''
@@ -58,22 +62,25 @@ function velocityInput() {
 
 function applyEdit() {
 
+  multiplier.value = draftMultiplier.value
+
   name.value = draftName.value
 
   const additionMultiplier = SUFFIX_LIST.find(([s]) => s === draftAdditionSuffix.value)?.[1] ?? 1
   count.value += draftAdditionNumber.value * additionMultiplier
 
-  const multiplier = SUFFIX_LIST.find(([s]) => s === draftSuffix.value)?.[1] ?? 1
-  velocity.value = draftInput.value * multiplier
+  const velocityMultiplier = SUFFIX_LIST.find(([s]) => s === draftSuffix.value)?.[1] ?? 1
+  velocity.value = draftInput.value * velocityMultiplier
   velocitySuffix.value = draftSuffix.value
   editing.value = false
 }
 
 function cancelEdit() {
+  draftMultiplier.value = multiplier.value
   draftAdditionNumber.value = 0
   draftAdditionSuffix.value = ''
   draftName.value = name.value
-  draftInput.value = count.value
+  draftInput.value = velocityInput()
   draftSuffix.value = velocitySuffix.value
   editing.value = false
 }
@@ -96,6 +103,7 @@ onMounted(() => {
     const saved = localStorage.getItem(storageKey())
     if (saved) {
       const s = JSON.parse(saved)
+      multiplier.value = s.multiplier ?? multiplier.value
       name.value = s.name ?? name.value
       count.value = s.count ?? count.value
       velocity.value = s.velocity ?? velocity.value
@@ -105,26 +113,33 @@ onMounted(() => {
 })
 
 watch(
-  () => ({ name: name.value, count: count.value, velocity: velocity.value, velocitySuffix: velocitySuffix.value }),
+  () => ({ name: name.value, multiplier: multiplier.value, count: count.value, velocity: velocity.value, velocitySuffix: velocitySuffix.value }),
   (state) => { localStorage.setItem(storageKey(), JSON.stringify(state)) }
 )
 
-function tick() { count.value += velocity.value }
+function tick() { count.value += velocity.value * multiplier.value }
 
 defineExpose({ tick })
 </script>
 
 <template>
   <div class="timed-counter">
-    <!-- Name -->
-    <div class="name">
-      <div v-if="!editing" class="name-display">
-        {{ name }}
+      <!-- Name -->
+      <div v-if="!editing" class="row w-100 space-between">
+        <div class="name">{{ name }}</div>
+        <div class="multiplier multiplier-display"><X :size="12" />{{ multiplier }}</div>
       </div>
-      <div v-if="editing" class="name-edit">
-        <input v-model="draftName" type="text" />
+
+      <div v-if="editing" class="col">
+        <div v-if="editing" class="name-edit">
+          <input v-model="draftName" type="text" />
+        </div>
+        <div v-if="editing" class="multiplier multiplier-edit">
+          <X :size="12" />
+          <input v-model="draftMultiplier" type="number" min="1" step="1" />
+        </div>
+
       </div>
-    </div>
     
     <!-- Count -->
     <div class="count">{{ formattedCount }}</div>
@@ -195,6 +210,34 @@ defineExpose({ tick })
   border-radius: 1rem;
 }
 
+.w-100 {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: .5rem;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.multiplier {
+  font-size: 1rem;
+  color: #555;
+  font-weight: 700;
+}
+
 .name-display {
   font-size: 1.25rem;
   font-weight: 600;
@@ -260,6 +303,7 @@ defineExpose({ tick })
   outline: none;
 }
 
+.multiplier-edit input,
 .addition-edit input,
 .velocity-input input {
   font-size: 1.1rem;
