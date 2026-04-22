@@ -1,8 +1,11 @@
 <script setup>
 import { Pencil, Check, X, Trash2, Plus, TrendingUp, RotateCcw } from 'lucide-vue-next'
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 
-const props = defineProps({ removable: { type: Boolean, default: false } })
+const props = defineProps({
+  removable: { type: Boolean, default: false },
+  id: { type: Number, required: true }
+})
 const emit = defineEmits(['remove'])
 
 const unit = "$";
@@ -85,6 +88,26 @@ const formattedCount = computed(() => {
   return String(n) + ' ' + unit
 })
 
+
+const storageKey = () => `timed-counter-${props.id}`
+
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem(storageKey())
+    if (saved) {
+      const s = JSON.parse(saved)
+      name.value = s.name ?? name.value
+      count.value = s.count ?? count.value
+      velocity.value = s.velocity ?? velocity.value
+      velocitySuffix.value = s.velocitySuffix ?? velocitySuffix.value
+    }
+  } catch { /* corrupted entry — start fresh */ }
+})
+
+watch(
+  () => ({ name: name.value, count: count.value, velocity: velocity.value, velocitySuffix: velocitySuffix.value }),
+  (state) => { localStorage.setItem(storageKey(), JSON.stringify(state)) }
+)
 
 function tick() { count.value += velocity.value }
 

@@ -1,17 +1,26 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { Plus } from 'lucide-vue-next'
 import TimedCounter from './components/TimedCounter.vue'
 
-const counters = ref([0])
+const ROSTER_KEY = 'timed-counters-roster'
+
+const savedRoster = (() => { try { return JSON.parse(localStorage.getItem(ROSTER_KEY)) } catch { return null } })()
+const counters = ref(savedRoster?.counters ?? [0])
 const counterRefs = ref([])
-let nextId = 1
+let nextId = savedRoster?.nextId ?? 1
+
+watch(counters, (val) => {
+  localStorage.setItem(ROSTER_KEY, JSON.stringify({ counters: val, nextId }))
+}, { deep: true })
 
 function addCounter() {
   counters.value.push(nextId++)
+  localStorage.setItem(ROSTER_KEY, JSON.stringify({ counters: counters.value, nextId }))
 }
 
 function removeCounter(id) {
+  localStorage.removeItem(`timed-counter-${id}`)
   counters.value = counters.value.filter(c => c !== id)
 }
 
@@ -25,6 +34,7 @@ onUnmounted(() => clearInterval(timer))
         <TimedCounter
           v-for="id in counters"
           :key="id"
+          :id="id"
           ref="counterRefs"
           :removable="counters.length > 1"
           @remove="removeCounter(id)"
