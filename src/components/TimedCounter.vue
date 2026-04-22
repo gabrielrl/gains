@@ -31,6 +31,9 @@ function onRemove() {
 }
 
 function openEdit() {
+  draftName.value = name.value
+  draftAdditionNumber.value = 0
+  draftAdditionSuffix.value = ''
   draftInput.value = velocityInput()
   draftSuffix.value = velocitySuffix.value
   editing.value = true
@@ -117,7 +120,7 @@ defineExpose({ tick })
     </div>
     
     <div v-if="editing" class="velocity-input">
-      <label for="velocity-field"><TrendingUp :size="18" />&nbsp;:</label>
+      <label for="velocity-field"><TrendingUp :size="18" /></label>
       <input
         id="velocity-field"
         v-model="draftInput"
