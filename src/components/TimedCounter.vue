@@ -30,6 +30,15 @@ function onRemove() {
   }
 }
 
+function onReset() {
+  if (confirm(`Êtes-vous sûr de vouloir réinitialiser le compteur "${name.value}"?`)) {
+    count.value = 0
+    velocity.value = 0
+    velocitySuffix.value = ''
+    cancelEdit()
+  }
+}
+
 function openEdit() {
   draftName.value = name.value
   draftAdditionNumber.value = 0
@@ -136,11 +145,16 @@ defineExpose({ tick })
       <span>{{ unit }}/s</span>
     </div>
     <div class="actions">
-      <button v-if="!editing && props.removable" class="remove-btn" @click="onRemove"><Trash2 :size="18" /></button>
-      <button v-if="editing" @click="count = 0; velocity = 0"><RotateCcw :size="18" /></button>
-      <button v-if="!editing" @click="openEdit"><Pencil :size="18" /></button>
-      <button v-if="editing" @click="cancelEdit"><X :size="18" /></button>
-      <button v-if="editing" @click="applyEdit"><Check :size="18" /></button>
+      <div class="actions-left">
+
+        <button v-if="!editing && props.removable" class="remove-btn" @click="onRemove"><Trash2 :size="18" /></button>
+        <button v-if="editing" @click="onReset" class="reset-btn"><RotateCcw :size="18" /></button>
+      </div>
+      <div class="actions-right">        
+        <button v-if="!editing" @click="openEdit"><Pencil :size="18" /></button>
+        <button v-if="editing" @click="cancelEdit"><X :size="18" /></button>
+        <button v-if="editing" @click="applyEdit"><Check :size="18" /></button>
+      </div>
     </div>
   </div>
 </template>
@@ -188,11 +202,13 @@ defineExpose({ tick })
   color: #555;
 }
 
+.reset-btn,
 .remove-btn {
   border-color: #c0392b;
   color: #c0392b;
 }
 
+.reset-btn:hover,
 .remove-btn:hover {
   background: #c0392b;
   color: white;
@@ -228,6 +244,17 @@ defineExpose({ tick })
   outline: none;
   background: white;
   cursor: pointer;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.actions-left,
+.actions-right {
+  display: flex;
+  gap: 0.5rem;
 }
 
 </style>
